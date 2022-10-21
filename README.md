@@ -5,6 +5,5 @@
 - PWA support
 - Layouts
 - Route transitions
-- Sitemap
 - Prisma
 - Server data functions

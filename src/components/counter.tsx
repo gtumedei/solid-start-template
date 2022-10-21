@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js"
 
-export default function Counter() {
+const Counter = () => {
   const [count, setCount] = createSignal(0)
   return (
     <button
@@ -9,3 +9,5 @@ export default function Counter() {
     >Clicks: {count()}</button>
   )
 }
+
+export default Counter

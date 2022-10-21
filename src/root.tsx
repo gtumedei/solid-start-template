@@ -9,24 +9,24 @@ import {
   Html,
   Meta,
   Routes,
-  Scripts,
-  Title,
+  Scripts
 } from "solid-start"
+import AppMenu from "~/components/app-menu"
+import AppTitle from "~/components/app-title"
 import "~/style.css"
 
-export default function Root() {
+const Root = () => {
   return (
     <Html lang="en">
       <Head>
-        <Title>SolidStart - With TailwindCSS</Title>
         <Meta charset="utf-8" />
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
+        <AppTitle />
       </Head>
       <Body>
         <Suspense>
           <ErrorBoundary>
-            <A class="mr-2" href="/">Index</A>
-            <A href="/about">About</A>
+            <AppMenu />
             <Routes>
               <FileRoutes />
             </Routes>
@@ -37,3 +37,5 @@ export default function Root() {
     </Html>
   )
 }
+
+export default Root
