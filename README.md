@@ -1,9 +1,12 @@
 # solid-start-template
 
+## Features
+- Use icons from any set with unplugin-icons
+- Inline CSS modules support
+
 ## TODO
-- Icon support
 - PWA support
 - Layouts
 - Route transitions
 - Prisma
-- Server data functions
+- Server data functions (or tRPC?)

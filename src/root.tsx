@@ -1,16 +1,6 @@
 // @refresh reload
 import { Suspense } from "solid-js"
-import {
-  A,
-  Body,
-  ErrorBoundary,
-  FileRoutes,
-  Head,
-  Html,
-  Meta,
-  Routes,
-  Scripts
-} from "solid-start"
+import { Body, ErrorBoundary, FileRoutes, Head, Html, Meta, Routes, Scripts } from "solid-start"
 import AppMenu from "~/components/app-menu"
 import AppTitle from "~/components/app-title"
 import "~/style.css"
