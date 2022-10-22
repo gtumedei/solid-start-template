@@ -9,12 +9,14 @@
   "dependencies": {
     "@solidjs/meta": "^0.28.0",
     "@solidjs/router": "^0.5.0",
+    "nprogress": "^0.2.0",
     "solid-js": "^1.6.0",
     "solid-start": "^0.2.0",
     "undici": "^5.11.0"
   },
   "devDependencies": {
     "@iconify-json/mdi": "^1.1.34",
+    "@types/nprogress": "^0.2.0",
     "autoprefixer": "^10.4.12",
     "postcss": "^8.4.18",
     "solid-start-node": "^0.2.0",

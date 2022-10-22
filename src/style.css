@@ -7,3 +7,11 @@
     @apply rounded-full bg-gray-100 border-2 border-gray-300 focus:border-gray-400 active:border-gray-400 px-8 py-4;
   }
 }
+
+#nprogress {
+  @apply pointer-events-none;
+
+  .bar {
+    @apply fixed top-0 left-0 w-full h-[2px] z-[3000] bg-sky-600;
+  }
+}

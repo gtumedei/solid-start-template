@@ -3,7 +3,8 @@ import { useRouteData } from "solid-start"
 import { createServerData$ } from "solid-start/server"
 import AppTitle from "~/components/app-title"
 
-export const routeData = () => createServerData$(() => {
+export const routeData = () => createServerData$(async () => {
+  await new Promise(r => setTimeout(r, 1000))
   const posts = [
     { title: "First post", body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis, voluptate!" },
     { title: "Second post", body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis, voluptate!" }
