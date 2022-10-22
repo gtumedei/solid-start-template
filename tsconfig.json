@@ -8,8 +8,9 @@
     "jsxImportSource": "solid-js",
     "jsx": "preserve",
     "types": [
-      "vite/client",
       "unplugin-icons/types/solid",
+      "vite/client",
+      "vite-plugin-pwa/client"
     ],
     "baseUrl": "./",
     "paths": {

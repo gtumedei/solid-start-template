@@ -3,9 +3,9 @@
 ## Features
 - Use icons from any set with unplugin-icons
 - Inline CSS modules support
+- PWA support with vite-pwa
 
 ## TODO
-- PWA support
 - Layouts
 - Route transitions
 - Prisma

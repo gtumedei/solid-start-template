@@ -3,9 +3,12 @@ import { Suspense } from "solid-js"
 import { Body, ErrorBoundary, FileRoutes, Head, Html, Meta, Routes, Scripts } from "solid-start"
 import AppMenu from "~/components/app-menu"
 import AppTitle from "~/components/app-title"
+import { registerPwa, PwaUpdatePrompt } from "~/lib/pwa"
 import "~/style.css"
 
 const Root = () => {
+  registerPwa()
+
   return (
     <Html lang="en">
       <Head>
@@ -20,6 +23,7 @@ const Root = () => {
             <Routes>
               <FileRoutes />
             </Routes>
+            <PwaUpdatePrompt />
           </ErrorBoundary>
         </Suspense>
         <Scripts />
