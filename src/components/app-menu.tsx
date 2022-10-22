@@ -1,7 +1,8 @@
 import { A } from "solid-start"
 import { css } from "vite-plugin-inline-css-modules"
-import MdiInformationOutline from "~icons/mdi/information-outline"
 import MdiHomeOutline from "~icons/mdi/home-outline"
+import MdiInformationOutline from "~icons/mdi/information-outline"
+import MdiListBoxOutline from "~icons/mdi/list-box-outline"
 
 const style = css`
   .navItem {
@@ -18,6 +19,9 @@ const AppMenu = () => {
     <nav class="flex justify-center gap-4 p-4">
       <A href="/" class={style.navItem} activeClass={style.active} end>
         <MdiHomeOutline />Home
+      </A>
+      <A href="/posts" class={style.navItem} activeClass={style.active}>
+        <MdiListBoxOutline />Posts
       </A>
       <A href="/about" class={style.navItem} activeClass={style.active}>
         <MdiInformationOutline />About

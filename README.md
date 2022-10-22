@@ -10,3 +10,5 @@
 - Route transitions
 - Prisma
 - Server data functions (or tRPC?)
+- Progress bar
+- Form handling
