@@ -5,10 +5,10 @@
 - Inline CSS modules support
 - PWA support with vite-pwa
 - Progress bar for page loading with nprogress
+- Handle forms with felte and zod
 
 ## TODO
 - Layouts
 - Route transitions
 - Prisma
 - Server data functions (or tRPC?)
-- Form handling

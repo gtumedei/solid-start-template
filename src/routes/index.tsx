@@ -9,7 +9,7 @@ const HomePage = () => {
 
       <main class="text-center mx-auto text-gray-700 p-4">
         <h1 class="text-6xl text-sky-700 font-thin uppercase my-16">
-          Hello world! 2
+          Hello world!
         </h1>
         <Counter />
         <p class="mt-8">

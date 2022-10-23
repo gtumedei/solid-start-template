@@ -2,17 +2,21 @@
   "name": "solid-start-template",
   "type": "module",
   "scripts": {
-    "dev": "solid-start dev",
+    "start": "solid-start start --host",
+    "dev": "solid-start dev --host",
     "build": "solid-start build",
-    "start": "solid-start start"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@felte/solid": "^1.2.6",
+    "@felte/validator-zod": "^1.0.12",
     "@solidjs/meta": "^0.28.0",
     "@solidjs/router": "^0.5.0",
     "nprogress": "^0.2.0",
     "solid-js": "^1.6.0",
     "solid-start": "^0.2.0",
-    "undici": "^5.11.0"
+    "undici": "^5.11.0",
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@iconify-json/mdi": "^1.1.34",
