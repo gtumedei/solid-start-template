@@ -3,7 +3,7 @@ import { isServer } from "solid-js/web"
 import { useRegisterSW } from "virtual:pwa-register/solid"
 
 const [needRefresh, setNeedRefresh] = createSignal(false)
-let updateSw: ((reloadPage?: boolean) => Promise<void>) | undefined = undefined
+let updateSw: ReturnType<typeof useRegisterSW>["updateServiceWorker"] | undefined = undefined
 
 export const registerPwa = () => {
   if (!isServer) {
