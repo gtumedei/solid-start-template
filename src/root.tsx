@@ -1,8 +1,8 @@
 // @refresh reload
 import { Suspense } from "solid-js"
 import { Body, ErrorBoundary, FileRoutes, Head, Html, Meta, Routes, Scripts } from "solid-start"
-import AppMenu from "~/components/app-menu"
 import AppTitle from "~/components/app-title"
+import { LayoutRoute } from "~/lib/layout"
 import { createProgress } from "~/lib/progress"
 import { registerPwa, PwaUpdatePrompt } from "~/lib/pwa"
 import "~/style.css"
@@ -21,9 +21,10 @@ const Root = () => {
       <Body>
         <Suspense>
           <ErrorBoundary>
-            <AppMenu />
             <Routes>
-              <FileRoutes />
+              <LayoutRoute>
+                <FileRoutes />
+              </LayoutRoute>
             </Routes>
             <PwaUpdatePrompt />
           </ErrorBoundary>

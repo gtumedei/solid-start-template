@@ -2,6 +2,7 @@ import { For } from "solid-js"
 import { useRouteData } from "solid-start"
 import { createServerData$ } from "solid-start/server"
 import AppTitle from "~/components/app-title"
+import { MainLayout } from "~/layouts/MainLayout"
 
 export const routeData = () => createServerData$(async () => {
   await new Promise(r => setTimeout(r, 1000))
@@ -17,10 +18,10 @@ const PostsPage = () => {
   const posts = useRouteData<typeof routeData>()
 
   return (
-    <>
-      <AppTitle>Posts</AppTitle>
+    <MainLayout>
+      <main>
+        <AppTitle>Posts</AppTitle>
 
-      <main class="text-center mx-auto text-gray-700 p-4">
         <h1 class="text-6xl text-sky-700 font-thin uppercase my-16">
           Posts
         </h1>
@@ -33,7 +34,7 @@ const PostsPage = () => {
           }</For>
         </div>
       </main>
-    </>
+    </MainLayout>
   )
 }
 

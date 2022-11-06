@@ -1,13 +1,14 @@
 import { A } from "solid-start"
 import AppTitle from "~/components/app-title"
 import Counter from "~/components/counter"
+import { MainLayout } from "~/layouts/MainLayout"
 
 const HomePage = () => {
   return (
-    <>
-      <AppTitle>Home</AppTitle>
+    <MainLayout>
+      <main>
+        <AppTitle>Home</AppTitle>
 
-      <main class="text-center mx-auto text-gray-700 p-4">
         <h1 class="text-6xl text-sky-700 font-thin uppercase my-16">
           Hello world!
         </h1>
@@ -27,7 +28,7 @@ const HomePage = () => {
           <A href="/about" class="text-sky-600 hover:underline">About Page</A>
         </p>
       </main>
-    </>
+    </MainLayout>
   )
 }
 

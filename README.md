@@ -8,7 +8,6 @@
 - Handle forms with felte and zod
 
 ## TODO
-- Layouts
-- Route transitions
+- Route transitions (AnimatedOutlet implemented but not working)
 - Prisma
 - Server data functions (or tRPC?)

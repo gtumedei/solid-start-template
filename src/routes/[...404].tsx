@@ -1,9 +1,10 @@
 import { A } from "solid-start"
 import AppTitle from "~/components/app-title"
+import { EmptyLayout } from "~/layouts/EmptyLayout"
 
 const NotFoundPage = () => {
   return (
-    <>
+    <EmptyLayout>
       <AppTitle>Page Not Found</AppTitle>
 
       <main class="text-center mx-auto text-gray-700 p-4">
@@ -25,7 +26,7 @@ const NotFoundPage = () => {
           <A href="/about" class="text-sky-600 hover:underline">About Page</A>
         </p>
       </main>
-    </>
+    </EmptyLayout>
   )
 }
 

@@ -1,6 +1,7 @@
 import { css } from "vite-plugin-inline-css-modules"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
+import { MainLayout } from "~/layouts/MainLayout"
 import { createForm } from "~/lib/form"
 
 const FormPage = () => {
@@ -14,10 +15,10 @@ const FormPage = () => {
 
   form
   return (
-    <>
-      <AppTitle>Form</AppTitle>
+    <MainLayout>
+      <main>
+        <AppTitle>Form</AppTitle>
 
-      <main class="text-center mx-auto text-gray-700 p-4">
         <h1 class="text-6xl text-sky-700 font-thin uppercase my-16">
           Form
         </h1>
@@ -30,7 +31,7 @@ const FormPage = () => {
           </form>
         </div>
       </main>
-    </>
+    </MainLayout>
   )
 }
 
