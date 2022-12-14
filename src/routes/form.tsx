@@ -1,7 +1,7 @@
 import { css } from "vite-plugin-inline-css-modules"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
-import { MainLayout } from "~/layouts/MainLayout"
+import { MainLayout } from "~/layouts/main-layout"
 import { createForm } from "~/lib/form"
 
 const FormPage = () => {

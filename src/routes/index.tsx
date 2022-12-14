@@ -1,7 +1,7 @@
 import { A } from "solid-start"
 import AppTitle from "~/components/app-title"
 import Counter from "~/components/counter"
-import { MainLayout } from "~/layouts/MainLayout"
+import { MainLayout } from "~/layouts/main-layout"
 
 const HomePage = () => {
   return (

@@ -1,5 +1,5 @@
 import AppTitle from "~/components/app-title"
-import { MainLayout } from "~/layouts/MainLayout"
+import { MainLayout } from "~/layouts/main-layout"
 
 const AboutPage = () => {
   return (

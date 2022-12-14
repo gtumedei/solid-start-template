@@ -2,7 +2,7 @@ import { For } from "solid-js"
 import { useRouteData } from "solid-start"
 import { createServerData$ } from "solid-start/server"
 import AppTitle from "~/components/app-title"
-import { MainLayout } from "~/layouts/MainLayout"
+import { MainLayout } from "~/layouts/main-layout"
 
 export const routeData = () => createServerData$(async () => {
   await new Promise(r => setTimeout(r, 1000))

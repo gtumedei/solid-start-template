@@ -1,6 +1,6 @@
 import { A } from "solid-start"
 import AppTitle from "~/components/app-title"
-import { EmptyLayout } from "~/layouts/EmptyLayout"
+import { EmptyLayout } from "~/layouts/empty-layout"
 
 const NotFoundPage = () => {
   return (
