@@ -1,16 +1,63 @@
 import { For } from "solid-js"
 import { useRouteData } from "solid-start"
-import { createServerData$ } from "solid-start/server"
+import { createServerAction$, createServerData$ } from "solid-start/server"
+import { css } from "vite-plugin-inline-css-modules"
+import { z } from "zod"
 import AppTitle from "~/components/app-title"
 import { MainLayout } from "~/layouts/main-layout"
+import { createForm } from "~/lib/form"
+import prisma from "~/lib/prisma"
+
+const postFormSchema = z.object({
+  title: z.string().min(1),
+  content: z.string().min(1)
+})
+type PostForm = z.infer<typeof postFormSchema>
+
+const NewPostForm = () => {
+  const [, createPost] = createServerAction$(async (postForm: PostForm) => {
+    console.log("createPost")
+    const parsedPostForm = postFormSchema.safeParse(postForm)
+    if (!parsedPostForm.success) {
+      // TODO: parse Zod errors
+      throw new Response(null, { status: 404, statusText: "Bad request" })
+    }
+    await prisma.post.create({
+      data: {
+        ...parsedPostForm.data,
+        userId: 1
+      }
+    })
+    return { message: "Post successfully created" }
+  })
+
+  const { form, isValid, isSubmitting, reset } = createForm({
+    schema: postFormSchema,
+    onSubmit: async (values) => {
+      await createPost(values)
+      reset()
+    }
+  })
+
+  form
+  return (
+    <form use:form class="flex flex-col gap-3">
+      <input class={style.input} type="text" name="title" placeholder="Title" />
+      <textarea class={style.input} name="content" placeholder="Content" />
+      <button type="submit" class="btn mx-auto" disabled={!isValid() || isSubmitting()}>Publish</button>
+    </form>
+  )
+}
+
+const style = css`
+  .input {
+    @apply rounded-lg px-3 py-2 border border-gray-300 focus:border-gray-400 outline-none;
+  }
+`
 
 export const routeData = () => createServerData$(async () => {
-  await new Promise(r => setTimeout(r, 1000))
-  const posts = [
-    { title: "First post", body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis, voluptate!" },
-    { title: "Second post", body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis, voluptate!" }
-  ]
-  console.log(posts)
+  console.log("getPosts")
+  const posts = await prisma.post.findMany()
   return posts
 })
 
@@ -25,13 +72,19 @@ const PostsPage = () => {
         <h1 class="text-6xl text-sky-700 font-thin uppercase my-16">
           Posts
         </h1>
-        <div class="max-w-3xl flex flex-col gap-6 m-auto">
-          <For each={posts()}>{(post) =>
-            <div class="border border-gray-200 rounded-lg text-left p-4">
-              <h2 class="text-xl text-sky-700 uppercase mb-2">{post.title}</h2>
-              <p>{post.body}</p>
-            </div>
-          }</For>
+
+        <NewPostForm />
+
+        <div class="max-w-3xl flex flex-col gap-6 mt-16">
+          {posts()?.length ?? 0 > 0
+            ? <For each={posts()}>{(post) =>
+                <div class="border border-gray-200 rounded-lg text-left p-4">
+                  <h2 class="text-xl text-sky-700 uppercase mb-2">{post.title}</h2>
+                  <p>{post.content}</p>
+                </div>
+              }</For>
+            : <p class="text-gray-500">There are no posts to show.</p>
+          }
         </div>
       </main>
     </MainLayout>

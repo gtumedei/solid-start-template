@@ -1,7 +1,17 @@
+import { createSignal } from "solid-js"
 import { A } from "solid-start"
 import AppTitle from "~/components/app-title"
-import Counter from "~/components/counter"
 import { MainLayout } from "~/layouts/main-layout"
+
+const Counter = () => {
+  const [count, setCount] = createSignal(0)
+  return (
+    <button
+      class="btn w-[200px]"
+      onClick={() => setCount(c => c + 1)}
+    >Clicks: {count()}</button>
+  )
+}
 
 const HomePage = () => {
   return (

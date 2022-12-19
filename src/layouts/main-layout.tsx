@@ -13,7 +13,11 @@ export const MainLayout = createLayout(() => {
 })
 
 const style = css`
-  .layout > main {
-    @apply text-center mx-auto text-gray-700 p-4;
+  .layout {
+    @apply w-full max-w-3xl;
+
+    main {
+      @apply text-center mx-auto text-gray-700 p-4;
+    }
   }
 `
