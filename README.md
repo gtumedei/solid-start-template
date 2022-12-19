@@ -16,3 +16,4 @@
 - Solid Auth
 - Server data functions
 - tRPC + Solid Query (once SSR is supported)
+- env variables validation with zod
