@@ -1,9 +1,7 @@
 import { A } from "solid-start"
 import { css } from "vite-plugin-inline-css-modules"
 import MdiHomeOutline from "~icons/mdi/home-outline"
-import MdiInformationOutline from "~icons/mdi/information-outline"
 import MdiListBoxOutline from "~icons/mdi/list-box-outline"
-import MdiTextBoxOutline from "~icons/mdi/text-box-outline"
 
 const AppMenu = () => {
   return (
@@ -13,12 +11,6 @@ const AppMenu = () => {
       </A>
       <A href="/posts" class={style.navItem} activeClass={style.active}>
         <MdiListBoxOutline />Posts
-      </A>
-      <A href="/form" class={style.navItem} activeClass={style.active}>
-        <MdiTextBoxOutline />Form
-      </A>
-      <A href="/about" class={style.navItem} activeClass={style.active}>
-        <MdiInformationOutline />About
       </A>
     </nav>
   )

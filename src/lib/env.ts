@@ -11,7 +11,7 @@ export const clientSchema = z.object({
   VITE_TEST_VARIABLE: z.string()
 })
 
-export const formatErrors = (errors: ZodFormattedError<Map<string, string>, string>) =>
+const formatErrors = (errors: ZodFormattedError<Map<string, string>, string>) =>
   Object.entries(errors)
     .map(([name, value]) => value && "_errors" in value ? `${name}: ${value._errors.join(", ")}\n` : undefined)
     .filter(Boolean)
@@ -24,7 +24,7 @@ if (isServer && parsedServerEnv.success === false) {
   throw new Error("Invalid environment variables")
 }
 
-export const serverEnv = (parsedServerEnv as SafeParseSuccess<z.infer<typeof serverSchema>>).data
+const serverEnv = (parsedServerEnv as SafeParseSuccess<z.infer<typeof serverSchema>>).data
 
 const parsedClientEnv = clientSchema.safeParse(import.meta.env)
 
@@ -33,4 +33,11 @@ if (parsedClientEnv.success === false) {
   throw new Error("Invalid environment variables")
 }
 
-export const clientEnv = parsedClientEnv.data
+const clientEnv = parsedClientEnv.data
+
+const env = {
+  server: serverEnv,
+  client: clientEnv
+}
+
+export default env

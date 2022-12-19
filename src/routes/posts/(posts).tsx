@@ -1,5 +1,5 @@
 import { For } from "solid-js"
-import { useRouteData } from "solid-start"
+import { A, useRouteData } from "solid-start"
 import { createServerAction$, createServerData$ } from "solid-start/server"
 import { css } from "vite-plugin-inline-css-modules"
 import { z } from "zod"
@@ -15,7 +15,7 @@ const postFormSchema = z.object({
 type PostForm = z.infer<typeof postFormSchema>
 
 const NewPostForm = () => {
-  const [, createPost] = createServerAction$(async (postForm: PostForm) => {
+  const [creatingPost, createPost] = createServerAction$(async (postForm: PostForm) => {
     console.log("createPost")
     const parsedPostForm = postFormSchema.safeParse(postForm)
     if (!parsedPostForm.success) {
@@ -35,7 +35,8 @@ const NewPostForm = () => {
     schema: postFormSchema,
     onSubmit: async (values) => {
       await createPost(values)
-      reset()
+      if (creatingPost.error) alert(creatingPost.error)
+      else reset()
     }
   })
 
@@ -55,11 +56,14 @@ const style = css`
   }
 `
 
-export const routeData = () => createServerData$(async () => {
-  console.log("getPosts")
-  const posts = await prisma.post.findMany()
-  return posts
-})
+export const routeData = () => createServerData$(
+  async () => {
+    console.log("getPosts")
+    const posts = await prisma.post.findMany()
+    return posts
+  },
+  { key: "posts" }
+)
 
 const PostsPage = () => {
   const posts = useRouteData<typeof routeData>()
@@ -69,19 +73,15 @@ const PostsPage = () => {
       <main>
         <AppTitle>Posts</AppTitle>
 
-        <h1 class="text-6xl text-sky-700 font-thin uppercase my-16">
-          Posts
-        </h1>
-
+        <h1 class="text-6xl text-sky-600 font-thin uppercase my-16">Posts</h1>
         <NewPostForm />
-
         <div class="max-w-3xl flex flex-col gap-6 mt-16">
           {posts()?.length ?? 0 > 0
             ? <For each={posts()}>{(post) =>
-                <div class="border border-gray-200 rounded-lg text-left p-4">
-                  <h2 class="text-xl text-sky-700 uppercase mb-2">{post.title}</h2>
+                <A href={`/posts/${post.id}`} class="border border-gray-200 rounded-lg text-left p-4">
+                  <h2 class="text-xl text-sky-600 font-bold mb-2">{post.title}</h2>
                   <p>{post.content}</p>
-                </div>
+                </A>
               }</For>
             : <p class="text-gray-500">There are no posts to show.</p>
           }

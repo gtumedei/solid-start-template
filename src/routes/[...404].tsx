@@ -5,12 +5,10 @@ import { EmptyLayout } from "~/layouts/empty-layout"
 const NotFoundPage = () => {
   return (
     <EmptyLayout>
-      <AppTitle>Page Not Found</AppTitle>
-
       <main class="text-center mx-auto text-gray-700 p-4">
-        <h1 class="text-6xl text-sky-700 font-thin uppercase my-16">
-          Not Found
-        </h1>
+        <AppTitle>Page Not Found</AppTitle>
+
+        <h1 class="text-6xl text-sky-600 font-thin uppercase my-16">Not Found</h1>
         <p class="mt-8">
           Visit{" "}
           <a

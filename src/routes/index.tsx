@@ -1,5 +1,4 @@
 import { createSignal } from "solid-js"
-import { A } from "solid-start"
 import AppTitle from "~/components/app-title"
 import { MainLayout } from "~/layouts/main-layout"
 
@@ -19,9 +18,7 @@ const HomePage = () => {
       <main>
         <AppTitle>Home</AppTitle>
 
-        <h1 class="text-6xl text-sky-700 font-thin uppercase my-16">
-          Hello world!
-        </h1>
+        <h1 class="text-6xl text-sky-600 font-thin uppercase my-16">Hello world!</h1>
         <Counter />
         <p class="mt-8">
           Visit{" "}
@@ -31,11 +28,6 @@ const HomePage = () => {
             class="text-sky-600 hover:underline"
           >solidjs.com</a>
           {" "}to learn how to build Solid apps.
-        </p>
-        <p class="my-4">
-          <span>Home</span>
-          {" - "}
-          <A href="/about" class="text-sky-600 hover:underline">About Page</A>
         </p>
       </main>
     </MainLayout>
