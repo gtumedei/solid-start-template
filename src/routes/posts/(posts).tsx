@@ -8,16 +8,16 @@ import { MainLayout } from "~/layouts/main-layout"
 import { createForm } from "~/lib/form"
 import prisma from "~/lib/prisma"
 
-const postFormSchema = z.object({
+const PostFormSchema = z.object({
   title: z.string().min(1),
   content: z.string().min(1)
 })
-type PostForm = z.infer<typeof postFormSchema>
+type PostForm = z.infer<typeof PostFormSchema>
 
 const NewPostForm = () => {
   const [creatingPost, createPost] = createServerAction$(async (postForm: PostForm) => {
     console.log("createPost")
-    const parsedPostForm = postFormSchema.safeParse(postForm)
+    const parsedPostForm = PostFormSchema.safeParse(postForm)
     if (!parsedPostForm.success) {
       // TODO: parse Zod errors
       throw new Response(null, { status: 404, statusText: "Bad request" })
@@ -32,7 +32,7 @@ const NewPostForm = () => {
   })
 
   const { form, isValid, isSubmitting, reset } = createForm({
-    schema: postFormSchema,
+    schema: PostFormSchema,
     onSubmit: async (values) => {
       await createPost(values)
       if (creatingPost.error) alert(creatingPost.error)
