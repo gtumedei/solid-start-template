@@ -1,30 +1,20 @@
-import { A } from "solid-start"
+import { HttpStatusCode } from "@solidjs/start"
 import AppTitle from "~/components/app-title"
-import { EmptyLayout } from "~/layouts/empty-layout"
 
 const NotFoundPage = () => {
   return (
-    <EmptyLayout>
-      <main class="text-center mx-auto text-gray-700 p-4">
-        <AppTitle>Page Not Found</AppTitle>
-
-        <h1 class="text-6xl text-sky-600 font-thin uppercase my-16">Not Found</h1>
-        <p class="mt-8">
-          Visit{" "}
-          <a
-            href="https://solidjs.com"
-            target="_blank"
-            class="text-sky-600 hover:underline"
-          >solidjs.com</a>
-          {" "}to learn how to build Solid apps.
-        </p>
-        <p class="my-4">
-          <A href="/" class="text-sky-600 hover:underline">Home</A>
-          {" - "}
-          <A href="/about" class="text-sky-600 hover:underline">About Page</A>
-        </p>
-      </main>
-    </EmptyLayout>
+    <div class="flex flex-col items-center text-center py-16">
+      <AppTitle>Page not found</AppTitle>
+      <HttpStatusCode code={404} />
+      <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase mb-16">Not Found</h1>
+      <p class="mt-8">
+        Visit{" "}
+        <a href="https://solidjs.com" target="_blank" class="text-sky-600 hover:underline">
+          solidjs.com
+        </a>{" "}
+        to learn how to build Solid apps.
+      </p>
+    </div>
   )
 }
 

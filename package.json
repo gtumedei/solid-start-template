@@ -1,43 +1,33 @@
 {
-  "name": "solid-start-template",
+  "name": "my-app",
   "type": "module",
   "scripts": {
-    "start": "solid-start start --host",
-    "dev": "solid-start dev --host",
-    "build": "solid-start build",
-    "typecheck": "tsc --noEmit",
-    "db:studio": "prisma studio",
-    "db:push": "prisma db push"
+    "dev": "vinxi dev --host",
+    "build": "vinxi build --host",
+    "start": "vinxi start",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@felte/solid": "^1.2.7",
-    "@felte/validator-zod": "^1.0.13",
-    "@prisma/client": "^4.9.0",
-    "@solidjs/meta": "^0.28.2",
-    "@solidjs/router": "^0.7.0",
-    "dotenv": "^16.0.3",
+    "@felte/core": "^1.4.1",
+    "@felte/solid": "^1.2.11",
+    "@felte/validator-zod": "^1.0.17",
+    "@iconify-json/tabler": "^1.1.103",
+    "@solidjs/meta": "^0.29.3",
+    "@solidjs/router": "^0.10.8",
+    "@solidjs/start": "^0.4.8",
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/nprogress": "^0.2.3",
+    "autoprefixer": "^10.4.14",
     "nprogress": "^0.2.0",
-    "solid-js": "^1.6.9",
-    "solid-start": "^0.2.16",
-    "solid-transition-group": "^0.0.13",
-    "undici": "^5.16.0",
-    "zod": "^3.20.2"
-  },
-  "devDependencies": {
-    "@iconify-json/mdi": "^1.1.44",
-    "@types/nprogress": "^0.2.0",
-    "autoprefixer": "^10.4.13",
-    "postcss": "^8.4.21",
-    "prisma": "^4.9.0",
-    "solid-start-node": "^0.2.16",
-    "tailwindcss": "^3.2.4",
-    "typescript": "^4.9.4",
-    "unplugin-icons": "^0.15.2",
-    "vite": "^3.2.2",
+    "postcss": "^8.4.26",
+    "solid-js": "^1.8.10",
+    "tailwindcss": "^3.3.3",
+    "unplugin-icons": "^0.18.2",
+    "vinxi": "0.1.1",
     "vite-plugin-inline-css-modules": "^0.0.7",
-    "vite-plugin-pwa": "^0.14.1"
+    "zod": "^3.22.4"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   }
 }

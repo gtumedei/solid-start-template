@@ -1,36 +1,20 @@
-import { createSignal } from "solid-js"
 import AppTitle from "~/components/app-title"
-import { MainLayout } from "~/layouts/main-layout"
-
-const Counter = () => {
-  const [count, setCount] = createSignal(0)
-  return (
-    <button
-      class="btn w-[200px]"
-      onClick={() => setCount(c => c + 1)}
-    >Clicks: {count()}</button>
-  )
-}
+import Counter from "~/components/counter"
 
 const HomePage = () => {
   return (
-    <MainLayout>
-      <main>
-        <AppTitle>Home</AppTitle>
-
-        <h1 class="text-6xl text-sky-600 font-thin uppercase my-16">Hello world!</h1>
-        <Counter />
-        <p class="mt-8">
-          Visit{" "}
-          <a
-            href="https://solidjs.com"
-            target="_blank"
-            class="text-sky-600 hover:underline"
-          >solidjs.com</a>
-          {" "}to learn how to build Solid apps.
-        </p>
-      </main>
-    </MainLayout>
+    <div class="flex flex-col items-center text-center py-16">
+      <AppTitle>Home</AppTitle>
+      <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase mb-16">Hello world!</h1>
+      <Counter />
+      <p class="mt-8">
+        Visit{" "}
+        <a href="https://solidjs.com" target="_blank" class="text-sky-600 hover:underline">
+          solidjs.com
+        </a>{" "}
+        to learn how to build Solid apps.
+      </p>
+    </div>
   )
 }
 
