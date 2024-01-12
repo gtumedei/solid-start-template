@@ -18,12 +18,12 @@ const App = () => {
     <Router
       root={(props) => (
         <MetaProvider>
-          <NProgress />
-          <Header />
-          <main class="grow flex flex-col">
-            <Suspense>{props.children}</Suspense>
-          </main>
-          <Footer />
+          <Suspense>
+            <NProgress />
+            <Header />
+            <main class="grow flex flex-col">{props.children}</main>
+            <Footer />
+          </Suspense>
         </MetaProvider>
       )}
     >
