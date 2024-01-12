@@ -21,7 +21,7 @@ const App = () => {
           <Suspense>
             <NProgress />
             <Header />
-            <main class="grow flex flex-col">{props.children}</main>
+            <main class="grow flex flex-col px-6">{props.children}</main>
             <Footer />
           </Suspense>
         </MetaProvider>

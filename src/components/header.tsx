@@ -3,9 +3,9 @@ import { css } from "vite-plugin-inline-css-modules"
 
 const Header = () => {
   return (
-    <header class="flex px-6 py-4 border-b border-black/10 relative">
+    <header class="flex px-6 py-3 border-b border-black/10 relative">
       <nav class="mx-auto">
-        <ul class="flex gap-6">
+        <ul class="flex">
           <li>
             <A href="/" end class={classes.navLink} activeClass={classes.navLinkActive}>
               Home
@@ -38,10 +38,10 @@ const Header = () => {
 
 const classes = css`
   .navLink {
-    @apply inline-flex text-sm font-medium relative;
+    @apply inline-flex text-sm font-medium px-3 relative;
 
     &::after {
-      @apply [content:''] absolute -bottom-1 inset-x-0 h-0.5;
+      @apply [content:''] absolute -bottom-[14px] inset-x-0 h-0.5;
     }
   }
 
