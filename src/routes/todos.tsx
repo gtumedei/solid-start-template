@@ -122,7 +122,7 @@ const TodoItem: Component<{ todo: Todo }> = (props) => {
 }
 
 const TodosPage = () => {
-  const todos = createAsync(getTodos)
+  const todos = createAsync(() => getTodos())
 
   return (
     <div class="flex flex-col items-center text-center py-16">

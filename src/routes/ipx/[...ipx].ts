@@ -1,7 +1,11 @@
-import { createIPX, ipxHttpStorage, createIPXH3Handler } from "ipx"
+import { APIHandler } from "@solidjs/start/server"
+import { useBase } from "h3"
+import { createIPX, createIPXH3Handler, ipxHttpStorage } from "ipx"
 
 const ipx = createIPX({
-  storage: ipxHttpStorage({ domains: ["localhost:3000"] }),
+  storage: ipxHttpStorage({ domains: ["images.unsplash.com"] }),
 })
 
-export const GET = createIPXH3Handler(ipx)
+const ipxHandler = useBase("/ipx", createIPXH3Handler(ipx))
+
+export const GET: APIHandler = (event) => ipxHandler(event.nativeEvent)

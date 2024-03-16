@@ -7,7 +7,4 @@
 - Typesafe environment variables with Zod
 - Progress bar for page loading with nprogress
 - Handle forms with felte and zod
-
-## TODO
-
 - Optimize images with ipx
