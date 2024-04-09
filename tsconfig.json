@@ -10,6 +10,10 @@
     "allowJs": true,
     "noEmit": true,
     "strict": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "isolatedModules": true,
     "skipLibCheck": true,
     "paths": {

@@ -3,7 +3,7 @@ import { useBase } from "h3"
 import { createIPX, createIPXH3Handler, ipxHttpStorage } from "ipx"
 
 const ipx = createIPX({
-  storage: ipxHttpStorage({ domains: ["images.unsplash.com"] }),
+  storage: ipxHttpStorage({ domains: ["www.solidjs.com"] }),
 })
 
 const ipxHandler = useBase("/ipx", createIPXH3Handler(ipx))
