@@ -1,54 +1,53 @@
-import { RouteDefinition, cache, createAsync, revalidate } from "@solidjs/router"
+import { RouteDefinition, action, cache, createAsync, reload, useAction } from "@solidjs/router"
 import { Component, For } from "solid-js"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
+import { db } from "~/lib/db"
 import { createForm } from "~/lib/form"
 import TablerPlus from "~icons/tabler/plus"
 import TablerX from "~icons/tabler/x"
 
-let todos = [
-  {
-    id: 0,
-    content: "Learn Solid.js",
-    completed: true,
-  },
-  {
-    id: 1,
-    content: "Finish this template",
-    completed: false,
-  },
-]
-
-type Todo = (typeof todos)[number]
+type Todo = {
+  id: number
+  content: string
+  completed: boolean
+}
 
 const getTodos = cache(async () => {
   "use server"
   console.log("getTodos")
+  const todos = ((await db.getItem("todos")) ?? []) as Todo[]
   return todos
 }, "todos")
 
-const createTodo = async (args: { content: string }) => {
+const createTodoAction = action(async (args: { content: string }) => {
   "use server"
   console.log("createTodo")
+  const todos = ((await db.getItem("todos")) ?? []) as Todo[]
   todos.push({ id: todos.length, content: args.content, completed: false })
-  return { success: true }
-}
+  await db.setItem("todos", todos)
+  reload({ revalidate: getTodos.key })
+})
 
-const toggleCompleted = async (args: { id: number }) => {
+const toggleCompletedAction = action(async (args: { id: number }) => {
   "use server"
   console.log("toggleCompleted")
+  const todos = ((await db.getItem("todos")) ?? []) as Todo[]
   const todo = todos.find((t) => t.id == args.id)
   if (!todo) return new Error("TODO not found")
   todo.completed = !todo.completed
-  return { success: true }
-}
+  await db.setItem("todos", todos)
+  reload({ revalidate: getTodos.key })
+})
 
-const deleteTodo = async (args: { id: number }) => {
+const deleteTodoAction = action(async (args: { id: number }) => {
   "use server"
   console.log("deleteTodo")
+  let todos = ((await db.getItem("todos")) ?? []) as Todo[]
   todos = todos.filter((t) => t.id != args.id)
-  return { success: true }
-}
+  await db.setItem("todos", todos)
+  reload({ revalidate: getTodos.key })
+})
 
 export const route = {
   load: () => getTodos(),
@@ -57,6 +56,8 @@ export const route = {
 const AddTodoForm = () => {
   let contentInput!: HTMLInputElement
 
+  const createTodo = useAction(createTodoAction)
+
   const { form, isValid, reset } = createForm({
     schema: z.object({
       content: z.string().min(1),
@@ -64,7 +65,6 @@ const AddTodoForm = () => {
     onSubmit: async (values) => {
       try {
         await createTodo(values)
-        await revalidate("todos")
         reset()
         contentInput.focus()
       } catch {
@@ -94,15 +94,16 @@ const AddTodoForm = () => {
 }
 
 const TodoItem: Component<{ todo: Todo }> = (props) => {
+  const toggleCompleted = useAction(toggleCompletedAction)
+  const deleteTodo = useAction(deleteTodoAction)
+
   const onToggle = async (e: Event) => {
     e.preventDefault()
     await toggleCompleted({ id: props.todo.id })
-    await revalidate("todos")
   }
 
   const onDelete = async () => {
     await deleteTodo({ id: props.todo.id })
-    await revalidate("todos")
   }
 
   return (
