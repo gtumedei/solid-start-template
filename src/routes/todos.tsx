@@ -49,10 +49,6 @@ const deleteTodoAction = action(async (args: { id: number }) => {
   reload({ revalidate: getTodos.key })
 })
 
-export const route = {
-  load: () => getTodos(),
-} satisfies RouteDefinition
-
 const AddTodoForm = () => {
   let contentInput!: HTMLInputElement
 
@@ -121,6 +117,10 @@ const TodoItem: Component<{ todo: Todo }> = (props) => {
     </li>
   )
 }
+
+export const route = {
+  load: () => getTodos(),
+} satisfies RouteDefinition
 
 const TodosPage = () => {
   const todos = createAsync(() => getTodos())
