@@ -1,9 +1,10 @@
-import { RouteDefinition, action, cache, createAsync, reload, useAction } from "@solidjs/router"
+import { RouteDefinition, createAsync, reload, useAction } from "@solidjs/router"
 import { Component, For } from "solid-js"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
 import { db } from "~/lib/db"
 import { createForm } from "~/lib/form"
+import { safeAction, safeQuery } from "~/lib/safe-data"
 import TablerPlus from "~icons/tabler/plus"
 import TablerX from "~icons/tabler/x"
 
@@ -13,38 +14,46 @@ type Todo = {
   completed: boolean
 }
 
-const getTodos = cache(async () => {
-  "use server"
-  console.log("getTodos")
-  const todos = ((await db.getItem("todos")) ?? []) as Todo[]
-  return todos
-}, "todos")
+const getTodos = safeQuery(
+  z.void(),
+  async () => {
+    "use server"
+    console.log("getTodos")
+    const todos = ((await db.getItem("todos")) ?? []) as Todo[]
+    return todos
+  },
+  "todos"
+)
 
-const createTodoAction = action(async (args: { content: string }) => {
+const CreateTodoSchema = z.object({
+  content: z.string().min(1),
+})
+
+const createTodoAction = safeAction(CreateTodoSchema, async (payload) => {
   "use server"
   console.log("createTodo")
   const todos = ((await db.getItem("todos")) ?? []) as Todo[]
-  todos.push({ id: todos.length, content: args.content, completed: false })
+  todos.push({ id: todos.length, content: payload.content, completed: false })
   await db.setItem("todos", todos)
   reload({ revalidate: getTodos.key })
 })
 
-const toggleCompletedAction = action(async (args: { id: number }) => {
+const toggleCompletedAction = safeAction(z.object({ id: z.number() }), async (payload) => {
   "use server"
   console.log("toggleCompleted")
   const todos = ((await db.getItem("todos")) ?? []) as Todo[]
-  const todo = todos.find((t) => t.id == args.id)
+  const todo = todos.find((t) => t.id == payload.id)
   if (!todo) return new Error("TODO not found")
   todo.completed = !todo.completed
   await db.setItem("todos", todos)
   reload({ revalidate: getTodos.key })
 })
 
-const deleteTodoAction = action(async (args: { id: number }) => {
+const deleteTodoAction = safeAction(z.object({ id: z.number() }), async (payload) => {
   "use server"
   console.log("deleteTodo")
   let todos = ((await db.getItem("todos")) ?? []) as Todo[]
-  todos = todos.filter((t) => t.id != args.id)
+  todos = todos.filter((t) => t.id != payload.id)
   await db.setItem("todos", todos)
   reload({ revalidate: getTodos.key })
 })
@@ -55,9 +64,7 @@ const AddTodoForm = () => {
   const createTodo = useAction(createTodoAction)
 
   const { form, isValid, reset } = createForm({
-    schema: z.object({
-      content: z.string().min(1),
-    }),
+    schema: CreateTodoSchema,
     onSubmit: async (values) => {
       try {
         await createTodo(values)
@@ -93,24 +100,24 @@ const TodoItem: Component<{ todo: Todo }> = (props) => {
   const toggleCompleted = useAction(toggleCompletedAction)
   const deleteTodo = useAction(deleteTodoAction)
 
-  const onToggle = async (e: Event) => {
-    e.preventDefault()
-    await toggleCompleted({ id: props.todo.id })
-  }
-
-  const onDelete = async () => {
-    await deleteTodo({ id: props.todo.id })
-  }
-
   return (
     <li class="flex gap-3">
-      <input type="checkbox" checked={props.todo.completed} onClick={onToggle} />
+      <input
+        type="checkbox"
+        checked={props.todo.completed}
+        onClick={async (e) => {
+          e.preventDefault()
+          await toggleCompleted({ id: props.todo.id })
+        }}
+      />
       <span class="grow" classList={{ "line-through opacity-50": props.todo.completed }}>
         {props.todo.content}
       </span>
       <button
         class="h-6 w-6 inline-flex rounded-full hover:bg-black/10 transition-colors"
-        onClick={onDelete}
+        onClick={async () => {
+          await deleteTodo({ id: props.todo.id })
+        }}
       >
         <TablerX class="text-xs m-auto" />
       </button>
