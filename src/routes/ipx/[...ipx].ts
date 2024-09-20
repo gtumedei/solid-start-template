@@ -8,4 +8,5 @@ const ipx = createIPX({
 
 const ipxHandler = useBase("/ipx", createIPXH3Handler(ipx))
 
+// @ts-expect-error
 export const GET: APIHandler = (event) => ipxHandler(event.nativeEvent)

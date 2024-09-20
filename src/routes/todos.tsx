@@ -43,7 +43,7 @@ const toggleCompletedAction = safeAction(z.object({ id: z.number() }), async (pa
   console.log("toggleCompleted")
   const todos = ((await db.getItem("todos")) ?? []) as Todo[]
   const todo = todos.find((t) => t.id == payload.id)
-  if (!todo) return new Error("TODO not found")
+  if (!todo) throw new Error("TODO not found")
   todo.completed = !todo.completed
   await db.setItem("todos", todos)
   reload({ revalidate: getTodos.key })

@@ -1,11 +1,7 @@
-import { Component, JSX, splitProps } from "solid-js"
+import { Component, ComponentProps, splitProps } from "solid-js"
 
 const Img: Component<
-  JSX.HTMLAttributes<HTMLImageElement> & {
-    src: string
-    alt: string
-    height?: number
-    width?: number
+  ComponentProps<"img"> & {
     format?: "jpg" | "jpeg" | "png" | "webp" | "avif" | "gif" | "heif" | "tiff"
     quality?: number
   }
