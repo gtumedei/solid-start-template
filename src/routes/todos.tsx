@@ -126,7 +126,7 @@ const TodoItem: Component<{ todo: Todo }> = (props) => {
 }
 
 export const route = {
-  load: () => getTodos(),
+  preload: () => getTodos(),
 } satisfies RouteDefinition
 
 const TodosPage = () => {

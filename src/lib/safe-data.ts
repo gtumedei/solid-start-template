@@ -1,8 +1,8 @@
-import { action, cache } from "@solidjs/router"
+import { action, query } from "@solidjs/router"
 import { ZodType, ZodTypeDef } from "zod"
 
 /**
- * Wrap a function in Solid Router's `cache` and validate its payload with Zod.\
+ * Wrap a function in Solid Router's `query` and validate its payload with Zod.\
  * `safeQuery` can throw, so errors in data fetching can be caught by error boundaries.
  */
 export const safeQuery = <TSchema, TInputSchema, TOutput>(
@@ -10,7 +10,7 @@ export const safeQuery = <TSchema, TInputSchema, TOutput>(
   queryFn: (payload: TSchema) => TOutput | Promise<TOutput>,
   queryKey: string
 ) =>
-  cache(async (rawPayload: TSchema) => {
+  query(async (rawPayload: TSchema) => {
     const validatedPayload = querySchema.parse(rawPayload)
     const res = await queryFn(validatedPayload)
     return res
