@@ -35,7 +35,7 @@ const createTodoAction = safeAction(CreateTodoSchema, async (payload) => {
   const todos = ((await db.getItem("todos")) ?? []) as Todo[]
   todos.push({ id: todos.length, content: payload.content, completed: false })
   await db.setItem("todos", todos)
-  reload({ revalidate: getTodos.key })
+  return reload({ revalidate: getTodos.key })
 })
 
 const toggleCompletedAction = safeAction(z.object({ id: z.number() }), async (payload) => {
@@ -46,7 +46,7 @@ const toggleCompletedAction = safeAction(z.object({ id: z.number() }), async (pa
   if (!todo) throw new Error("TODO not found")
   todo.completed = !todo.completed
   await db.setItem("todos", todos)
-  reload({ revalidate: getTodos.key })
+  return reload({ revalidate: getTodos.key })
 })
 
 const deleteTodoAction = safeAction(z.object({ id: z.number() }), async (payload) => {
@@ -55,7 +55,7 @@ const deleteTodoAction = safeAction(z.object({ id: z.number() }), async (payload
   let todos = ((await db.getItem("todos")) ?? []) as Todo[]
   todos = todos.filter((t) => t.id != payload.id)
   await db.setItem("todos", todos)
-  reload({ revalidate: getTodos.key })
+  return reload({ revalidate: getTodos.key })
 })
 
 const AddTodoForm = () => {
