@@ -37,6 +37,8 @@ const Header = () => {
 }
 
 const classes = css`
+  @reference "~/app.css";
+
   .navLink {
     @apply inline-flex text-sm font-medium px-3 relative;
 

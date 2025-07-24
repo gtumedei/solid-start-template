@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
 
 #nprogress {
   @apply pointer-events-none;
@@ -14,4 +14,28 @@
   .container {
     @apply max-w-3xl;
   }
+}
+
+/* Absolute positioning */
+
+@utility absolute-center {
+  @apply absolute transform top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2;
+}
+@utility absolute-center-x {
+  @apply absolute transform left-[50%] -translate-x-1/2;
+}
+@utility absolute-center-y {
+  @apply absolute transform top-[50%] -translate-y-1/2;
+}
+
+/* Fixed positioning */
+
+@utility fixed-center {
+  @apply fixed transform top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2;
+}
+@utility fixed-center-x {
+  @apply fixed transform left-[50%] -translate-x-1/2;
+}
+@utility fixed-center-y {
+  @apply fixed transform top-[50%] -translate-y-1/2;
 }

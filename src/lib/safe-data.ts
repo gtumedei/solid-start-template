@@ -1,11 +1,12 @@
 import { action, query } from "@solidjs/router"
-import { ZodIssue, ZodType, ZodTypeDef } from "zod"
+import { ZodType } from "zod"
+import { $ZodIssue } from "zod/v4/core"
 
 /**
  * Wrap a function in Solid Router's `query` and validate its payload client-side with Zod.
  */
 export const safeQuery = <TSchema, TSchemaInput, TOutput>(
-  querySchema: ZodType<TSchema, ZodTypeDef, TSchemaInput>,
+  querySchema: ZodType<TSchema, TSchemaInput>,
   queryFn: (payload: TSchema) => TOutput | Promise<TOutput>,
   queryKey: string
 ) =>
@@ -19,7 +20,7 @@ export const safeQuery = <TSchema, TSchemaInput, TOutput>(
  * Wrap a function in Solid Router's `action` and validate its payload client-side with Zod.
  */
 export const safeAction = <TSchema, TSchemaInput, TOutput>(
-  actionSchema: ZodType<TSchema, ZodTypeDef, TSchemaInput>,
+  actionSchema: ZodType<TSchema, TSchemaInput>,
   actionFn: (payload: TSchema) => TOutput | Promise<TOutput>
 ) =>
   action(async (rawPayload: TSchema) => {
@@ -30,7 +31,7 @@ export const safeAction = <TSchema, TSchemaInput, TOutput>(
 
 export const validated = <TSchema, TSchemaInput>(
   payload: unknown,
-  schema: ZodType<TSchema, ZodTypeDef, TSchemaInput>
+  schema: ZodType<TSchema, TSchemaInput>
 ): TSchema => {
   const res = schema.safeParse(payload)
   if (res.error) throw new ValidationError(res.error.issues)
@@ -38,9 +39,9 @@ export const validated = <TSchema, TSchemaInput>(
 }
 
 export class ValidationError extends Error {
-  issues: ZodIssue[]
+  issues: $ZodIssue[]
 
-  constructor(issues: ZodIssue[]) {
+  constructor(issues: $ZodIssue[]) {
     super()
     this.issues = issues
   }
