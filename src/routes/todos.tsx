@@ -1,10 +1,10 @@
-import { RouteDefinition, createAsync, reload, useAction } from "@solidjs/router"
+import { RouteDefinition, action, createAsync, query, reload, useAction } from "@solidjs/router"
 import { Component, For } from "solid-js"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
 import { db } from "~/lib/db"
 import { createForm } from "~/lib/form"
-import { safeAction, safeQuery } from "~/lib/safe-data"
+import { validated } from "~/lib/validation"
 import TablerPlus from "~icons/tabler/plus"
 import TablerX from "~icons/tabler/x"
 
@@ -14,33 +14,33 @@ type Todo = {
   completed: boolean
 }
 
-const getTodos = safeQuery(
-  z.void(),
-  async () => {
-    "use server"
-    console.log("getTodos")
-    const todos = ((await db.getItem("todos")) ?? []) as Todo[]
-    return todos
-  },
-  "todos"
-)
+const getTodos = query(async () => {
+  "use server"
+  console.log("getTodos")
+  const todos = ((await db.getItem("todos")) ?? []) as Todo[]
+  return todos
+}, "todos")
 
 const CreateTodoSchema = z.object({
   content: z.string().min(1),
 })
 
-const createTodoAction = safeAction(CreateTodoSchema, async (payload) => {
+const createTodoAction = action(async (rawPayload: z.infer<typeof CreateTodoSchema>) => {
   "use server"
-  console.log("createTodo")
+  const payload = validated(rawPayload, CreateTodoSchema)
+  console.log("createTodo", payload)
   const todos = ((await db.getItem("todos")) ?? []) as Todo[]
   todos.push({ id: todos.length, content: payload.content, completed: false })
   await db.setItem("todos", todos)
   return reload({ revalidate: getTodos.key })
 })
 
-const toggleCompletedAction = safeAction(z.object({ id: z.number() }), async (payload) => {
+const TodoIdSchema = z.object({ id: z.number() })
+
+const toggleCompletedAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
   "use server"
-  console.log("toggleCompleted")
+  const payload = validated(rawPayload, TodoIdSchema)
+  console.log("toggleCompleted", payload)
   const todos = ((await db.getItem("todos")) ?? []) as Todo[]
   const todo = todos.find((t) => t.id == payload.id)
   if (!todo) throw new Error("TODO not found")
@@ -49,9 +49,10 @@ const toggleCompletedAction = safeAction(z.object({ id: z.number() }), async (pa
   return reload({ revalidate: getTodos.key })
 })
 
-const deleteTodoAction = safeAction(z.object({ id: z.number() }), async (payload) => {
+const deleteTodoAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
   "use server"
-  console.log("deleteTodo")
+  const payload = validated(rawPayload, TodoIdSchema)
+  console.log("deleteTodo", payload)
   let todos = ((await db.getItem("todos")) ?? []) as Todo[]
   todos = todos.filter((t) => t.id != payload.id)
   await db.setItem("todos", todos)

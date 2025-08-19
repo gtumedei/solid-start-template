@@ -12,6 +12,4 @@
 
 ## TODO
 
-- Fix h3 not found
 - Add Drizzle and SQLite instead of unstorage?
-- Find a proper way to do both client and server-side query and action validation
