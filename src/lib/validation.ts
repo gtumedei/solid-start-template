@@ -5,10 +5,10 @@ import { z, ZodType } from "zod"
  * @returns The validated payload
  * @throws `Error | ValidationError`
  */
-export const validated = <TSchema, TSchemaInput>(
+export const validated = <TSchemaOutput, TSchemaInput>(
   payload: unknown,
-  schema: ZodType<TSchema, TSchemaInput>
-): TSchema => {
+  schema: ZodType<TSchemaOutput, TSchemaInput>
+): TSchemaOutput => {
   const res = schema.safeParse(payload)
   if (res.error) throw new ValidationError(res.error)
   return res.data
