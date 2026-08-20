@@ -1,5 +1,5 @@
-import { RouteDefinition, action, createAsync, query, reload, useAction } from "@solidjs/router"
-import { Component, For } from "solid-js"
+import { action, query, revalidate, RouteDefinition, useAction } from "@solidjs/router"
+import { Component, createMemo, For } from "solid-js"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
 import { db } from "~/lib/db"
@@ -32,7 +32,7 @@ const createTodoAction = action(async (rawPayload: z.infer<typeof CreateTodoSche
   const todos = ((await db.getItem("todos")) ?? []) as Todo[]
   todos.push({ id: todos.length, content: payload.content, completed: false })
   await db.setItem("todos", todos)
-  return reload({ revalidate: getTodos.key })
+  return revalidate(getTodos.key)
 })
 
 const TodoIdSchema = z.object({ id: z.number() })
@@ -46,7 +46,7 @@ const toggleCompletedAction = action(async (rawPayload: z.infer<typeof TodoIdSch
   if (!todo) throw new Error("TODO not found")
   todo.completed = !todo.completed
   await db.setItem("todos", todos)
-  return reload({ revalidate: getTodos.key })
+  return revalidate(getTodos.key)
 })
 
 const deleteTodoAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
@@ -56,7 +56,7 @@ const deleteTodoAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>)
   let todos = ((await db.getItem("todos")) ?? []) as Todo[]
   todos = todos.filter((t) => t.id != payload.id)
   await db.setItem("todos", todos)
-  return reload({ revalidate: getTodos.key })
+  return revalidate(getTodos.key)
 })
 
 const AddTodoForm = () => {
@@ -64,26 +64,32 @@ const AddTodoForm = () => {
 
   const createTodo = useAction(createTodoAction)
 
-  const { form, isValid, reset } = createForm({
+  const { fields, setFields, isValid, handleSubmit, reset } = createForm({
     schema: CreateTodoSchema,
+    initialValues: { content: "" },
     onSubmit: async (values) => {
       try {
         await createTodo(values)
         reset()
         contentInput.focus()
-      } catch {
+      } catch (e) {
+        console.error(e)
         alert("error")
       }
     },
   })
 
-  form
   return (
-    <form use:form class="flex items-center">
+    <form class="flex items-center" onSubmit={handleSubmit}>
       <input
         ref={contentInput}
-        name="content"
-        class="grow p-3 !outline-none"
+        value={fields.content}
+        onInput={(e) =>
+          setFields((fields) => {
+            fields.content = e.target.value
+          })
+        }
+        class="grow p-3 outline-none!"
         placeholder="Type your TODO here"
       />
       <button
@@ -111,7 +117,7 @@ const TodoItem: Component<{ todo: Todo }> = (props) => {
           await toggleCompleted({ id: props.todo.id })
         }}
       />
-      <span class="grow" classList={{ "line-through opacity-50": props.todo.completed }}>
+      <span class={["grow", props.todo.completed && "line-through opacity-50"]}>
         {props.todo.content}
       </span>
       <button
@@ -131,7 +137,7 @@ export const route = {
 } satisfies RouteDefinition
 
 const TodosPage = () => {
-  const todos = createAsync(() => getTodos())
+  const todos = createMemo(() => getTodos())
 
   return (
     <div class="flex flex-col items-center text-center py-16">
@@ -139,7 +145,7 @@ const TodosPage = () => {
       <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase mb-16">TODOs</h1>
       <div class="w-full max-w-md flex flex-col text-left rounded overflow-hidden border border-black/10 divide-y divide-black/10">
         <AddTodoForm />
-        {todos()?.length ?? 0 > 0 ? (
+        {(todos()?.length ?? 0 > 0) ? (
           <ul class="flex flex-col gap-2 p-3">
             <For each={todos()}>{(todo) => <TodoItem todo={todo} />}</For>
           </ul>

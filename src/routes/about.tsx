@@ -1,7 +1,7 @@
 import AppTitle from "~/components/app-title"
 import Img from "~/components/img"
 
-const AboutPage = () => {
+export default function AboutPage() {
   return (
     <div class="flex flex-col items-center text-center py-16">
       <AppTitle>About</AppTitle>
@@ -23,5 +23,3 @@ const AboutPage = () => {
     </div>
   )
 }
-
-export default AboutPage

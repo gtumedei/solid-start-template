@@ -2,14 +2,16 @@
 
 ## Features
 
-- Inline CSS modules support
 - Use icons from any set with unplugin-icons
 - Typesafe environment variables with Zod
 - Progress bar for page loading with nprogress
-- Handle forms with Felte and Zod
+- Custom Zod-based form handling utility
 - Optimize images with IPX
 - Fetch and mutate data safely with helpers on top of Zod and Solid Router
 
 ## TODO
 
-- Add Drizzle and SQLite instead of unstorage?
+- [ ] Add Drizzle and SQLite instead of unstorage
+- [ ] Fix unplugin-icons types
+- [ ] Text prod build
+  - [ ] Consider replacing `server.js` with [Nitro](https://v2.solidjs.com/building-apps/deployment#nitro)

@@ -4,7 +4,10 @@ import { createEffect } from "solid-js"
 
 export const NProgress = () => {
   const isRouting = useIsRouting()
-  createEffect(() => (isRouting() ? nprogress.start() : nprogress.done()))
+  createEffect(isRouting, (isRouting) => {
+    if (isRouting) nprogress.start()
+    else nprogress.done()
+  })
 
   return <></>
 }

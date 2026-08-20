@@ -1,35 +1,34 @@
-// @refresh reload
-import { MetaProvider } from "@solidjs/meta"
-import { Router } from "@solidjs/router"
-import { FileRoutes } from "@solidjs/start/router"
-import { Suspense } from "solid-js"
+import { Title } from "@solidjs/meta"
+import { Errored, Loading } from "solid-js"
 import Footer from "~/components/footer"
 import Header from "~/components/header"
 import { NProgress } from "~/components/nprogress"
 import env from "~/lib/env"
+import { Router } from "~/router"
 
-import "~/app.css"
+import "~/global.css"
 
-const App = () => {
+// The app root: the router and the site-wide layout live here. Pages are
+// the modules under src/routes.
+export default function App() {
   // Should print all env variables on the server, but only the public ones on the client
   console.log(env)
 
   return (
-    <Router
-      root={(props) => (
-        <MetaProvider>
-          <Suspense>
-            <NProgress />
-            <Header />
-            <main class="grow flex flex-col px-6">{props.children}</main>
-            <Footer />
-          </Suspense>
-        </MetaProvider>
+    <Router>
+      {(props) => (
+        <>
+          <Title>solid-start-template</Title>
+          <Errored fallback={(e) => <pre>{JSON.stringify(e(), null, 2)}</pre>}>
+            <Loading fallback={<main>Loading…</main>}>
+              <NProgress />
+              <Header />
+              <main class="grow flex flex-col px-6">{props.children}</main>
+              <Footer />
+            </Loading>
+          </Errored>
+        </>
       )}
-    >
-      <FileRoutes />
     </Router>
   )
 }
-
-export default App

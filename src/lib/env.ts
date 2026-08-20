@@ -1,5 +1,7 @@
-import { isServer } from "solid-js/web"
+import { isServer } from "@solidjs/web"
 import { z } from "zod"
+
+if (isServer) await import("dotenv/config")
 
 export const PrivateEnvSchema = z.object({
   TEST_VARIABLE: z.string(),

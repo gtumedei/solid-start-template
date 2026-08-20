@@ -6,7 +6,7 @@
   @apply pointer-events-none;
 
   .bar {
-    @apply fixed top-0 left-0 w-full h-[2px] z-[3000] bg-sky-600;
+    @apply fixed top-0 left-0 w-full h-0.5 z-3000 bg-sky-600;
   }
 }
 

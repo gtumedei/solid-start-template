@@ -1,45 +1,73 @@
-import { FormConfig } from "@felte/core"
-import { createForm as createFelteForm } from "@felte/solid"
-import { validator } from "@felte/validator-zod"
-import { createSignal } from "solid-js"
-import { ZodType } from "zod"
+import { createEffect, createMemo, createProjection, createStore } from "solid-js"
+import type { ZodType } from "zod"
 
-const parseError = (e: unknown) => {
-  if (e instanceof Error) {
-    return e.message
-  }
-  return JSON.stringify(e)
-}
+export const createForm = <TSchemaOutput extends Record<string, unknown>, TSchemaInput>({
+  schema,
+  initialValues,
+  onSubmit,
+}: {
+  schema: ZodType<TSchemaOutput, TSchemaInput>
+  initialValues: TSchemaOutput
+  onSubmit: (values: TSchemaOutput) => void
+}) => {
+  const [fields, setFields] = createStore<TSchemaOutput>({ ...initialValues } as any)
 
-export const createForm = <TSchemaOutput extends Record<string, unknown>, TSchemaInput>(
-  config: FormConfig<TSchemaOutput> & { schema: ZodType<TSchemaOutput, TSchemaInput> }
-) => {
-  const { schema, onSubmit, ...rest } = config
+  const [touched, setTouched] = createStore<Record<keyof TSchemaOutput, boolean>>(
+    Object.keys(initialValues).reduce(
+      (acc, key) => ({ ...acc, [key]: false }),
+      {} as Record<keyof TSchemaOutput, boolean>,
+    ) as any,
+  )
 
-  const [isSubmitting, setIsSubmitting] = createSignal(false)
-  const [submitError, setSubmitError] = createSignal("")
-
-  const form = createFelteForm<TSchemaOutput>({
-    extend: validator({ schema }),
-    onSubmit: async (values, ctx) => {
-      if (isSubmitting()) return
-      try {
-        setIsSubmitting(true)
-        await onSubmit?.(values, ctx)
-        setSubmitError("")
-      } catch (e) {
-        console.error(e)
-        setSubmitError(parseError(e))
-      } finally {
-        setIsSubmitting(false)
+  createEffect(
+    () => {
+      const dirty: (keyof TSchemaOutput)[] = []
+      for (const key in fields) {
+        if (!touched[key as keyof TSchemaOutput] && fields[key] !== initialValues[key]) {
+          dirty.push(key as keyof TSchemaOutput)
+        }
       }
+      return dirty
     },
-    ...(rest as any),
-  })
+    (dirty) => {
+      if (!dirty.length) return
+      setTouched((draft) => {
+        for (const key of dirty) draft[key] = true
+      })
+    },
+  )
 
-  return {
-    ...form,
-    isSubmitting,
-    submitError,
+  const errors = createProjection<Partial<Record<keyof TSchemaOutput, string>>>((draft) => {
+    for (const key in draft) delete draft[key as keyof TSchemaOutput]
+
+    const result = schema.safeParse(fields)
+    if (!result.success) {
+      for (const issue of result.error.issues) {
+        const key = issue.path[0] as keyof TSchemaOutput
+        if (touched[key] && !draft[key]) draft[key] = issue.message
+      }
+    }
+  }, {})
+
+  const isValid = createMemo(() => schema.safeParse(fields).success)
+
+  const reset = () => {
+    setFields(() => ({ ...initialValues }) as any)
+    setTouched((draft) => {
+      for (const key in draft) draft[key] = false
+    })
   }
+
+  const handleSubmit = (e: Event) => {
+    e.preventDefault()
+
+    setTouched((draft) => {
+      for (const key in draft) draft[key] = true
+    })
+
+    const result = schema.safeParse(fields)
+    if (result.success) onSubmit(result.data)
+  }
+
+  return { fields, setFields, errors, touched, isValid, reset, handleSubmit }
 }

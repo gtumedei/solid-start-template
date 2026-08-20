@@ -1,7 +1,7 @@
 import AppTitle from "~/components/app-title"
 import Counter from "~/components/counter"
 
-const HomePage = () => {
+export default function HomePage() {
   return (
     <div class="flex flex-col items-center text-center py-16">
       <AppTitle>Home</AppTitle>
@@ -17,5 +17,3 @@ const HomePage = () => {
     </div>
   )
 }
-
-export default HomePage
