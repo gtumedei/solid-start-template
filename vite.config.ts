@@ -3,6 +3,7 @@ import tailwind from "@tailwindcss/vite"
 import { fileRoutes } from "filesystem-routing/vite"
 import icons from "unplugin-icons/vite"
 import { defineConfig } from "vite"
+import { nitro } from "nitro/vite"
 
 export default defineConfig({
   plugins: [
@@ -19,6 +20,7 @@ export default defineConfig({
     fileRoutes({ httpMethods: true, types: true }),
     tailwind(),
     icons({ compiler: "solid" }),
+    nitro(),
   ],
   envPrefix: "PUBLIC_",
   resolve: {
