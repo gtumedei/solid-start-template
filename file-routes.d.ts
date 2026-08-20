@@ -51,17 +51,17 @@ declare module "virtual:file-routes" {
       $$route?: undefined;
     },
     {
-      path: "/todos";
-      page: true;
-      $component: FileRouteLazyRef<typeof import("./src/routes/todos")>;
-      $$route: FileRouteEagerRef<typeof import("./src/routes/todos")>;
-    },
-    {
       path: "/ipx/*ipx";
       page: false;
       $GET: FileRouteLazyRef<typeof import("./src/routes/ipx/[...ipx]")>;
       $HEAD: FileRouteLazyRef<typeof import("./src/routes/ipx/[...ipx]")>;
       $$route?: undefined;
+    },
+    {
+      path: "/todos";
+      page: true;
+      $component: FileRouteLazyRef<typeof import("./src/routes/todos")>;
+      $$route: FileRouteEagerRef<typeof import("./src/routes/todos")>;
     }
   ];
   export default routes;

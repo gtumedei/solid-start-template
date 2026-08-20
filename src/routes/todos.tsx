@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm"
 import { Component, createMemo, For } from "solid-js"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
+import { create } from "~/lib/context"
 import { db } from "~/lib/db"
 import { Todo, Todos } from "~/lib/db/schema"
 import { createForm } from "~/lib/form"
@@ -10,9 +11,13 @@ import { validated } from "~/lib/validation"
 import TablerPlus from "~icons/tabler/plus"
 import TablerX from "~icons/tabler/x"
 
+// Add an artificial delay to server operations to showcase pending state and optimistic updates
+const delay = (ms = 500) => new Promise((r) => setTimeout(r, ms))
+
 const getTodos = query(async () => {
   "use server"
   console.log("getTodos")
+  await delay()
   const todos = await db.select().from(Todos)
   return todos
 }, "todos")
@@ -25,6 +30,7 @@ const createTodoAction = action(async (rawPayload: z.infer<typeof CreateTodoSche
   "use server"
   const payload = validated(rawPayload, CreateTodoSchema)
   console.log("createTodo", payload)
+  await delay()
   await db.insert(Todos).values(payload)
   return revalidate(getTodos.key)
 })
@@ -35,6 +41,7 @@ const toggleCompletedAction = action(async (rawPayload: z.infer<typeof TodoIdSch
   "use server"
   const payload = validated(rawPayload, TodoIdSchema)
   console.log("toggleCompleted", payload)
+  await delay()
   const [todo] = await db.select().from(Todos).where(eq(Todos.id, payload.id))
   if (!todo) throw new Error("TODO not found")
   await db.update(Todos).set({ completed: !todo.completed }).where(eq(Todos.id, payload.id))
@@ -45,14 +52,26 @@ const deleteTodoAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>)
   "use server"
   const payload = validated(rawPayload, TodoIdSchema)
   console.log("deleteTodo", payload)
+  await delay()
   await db.delete(Todos).where(eq(Todos.id, payload.id))
   return revalidate(getTodos.key)
 })
 
+const createTodosCtx = () => {
+  const todos = createMemo(() => getTodos())
+
+  const createTodo = useAction(createTodoAction)
+  const toggleCompleted = useAction(toggleCompletedAction)
+  const deleteTodo = useAction(deleteTodoAction)
+
+  return { todos, createTodo, toggleCompleted, deleteTodo }
+}
+const [TodosProvider, useTodos] = create(createTodosCtx)
+
 const AddTodoForm = () => {
   let contentInput!: HTMLInputElement
 
-  const createTodo = useAction(createTodoAction)
+  const { createTodo } = useTodos()
 
   const { fields, setFields, isValid, handleSubmit, reset } = createForm({
     schema: CreateTodoSchema,
@@ -94,8 +113,7 @@ const AddTodoForm = () => {
 }
 
 const TodoItem: Component<{ todo: Todo }> = (props) => {
-  const toggleCompleted = useAction(toggleCompletedAction)
-  const deleteTodo = useAction(deleteTodoAction)
+  const { toggleCompleted, deleteTodo } = useTodos()
 
   return (
     <li class="flex gap-3">
@@ -127,23 +145,26 @@ export const route = {
 } satisfies RouteDefinition
 
 const TodosPage = () => {
-  const todos = createMemo(() => getTodos())
+  const todosCtx = createTodosCtx()
+  const { todos } = todosCtx
 
   return (
-    <div class="flex flex-col items-center text-center py-16">
-      <AppTitle>TODOs</AppTitle>
-      <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase mb-16">TODOs</h1>
-      <div class="w-full max-w-md flex flex-col text-left rounded overflow-hidden border border-black/10 divide-y divide-black/10">
-        <AddTodoForm />
-        {(todos()?.length ?? 0 > 0) ? (
-          <ul class="flex flex-col gap-2 p-3">
-            <For each={todos()}>{(todo) => <TodoItem todo={todo} />}</For>
-          </ul>
-        ) : (
-          <p class="opacity-70 p-3">Use the form above to add a new TODO.</p>
-        )}
+    <TodosProvider value={todosCtx}>
+      <div class="flex flex-col items-center text-center py-16">
+        <AppTitle>TODOs</AppTitle>
+        <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase mb-16">TODOs</h1>
+        <div class="w-full max-w-md flex flex-col text-left rounded overflow-hidden border border-black/10 divide-y divide-black/10">
+          <AddTodoForm />
+          {(todos()?.length ?? 0 > 0) ? (
+            <ul class="flex flex-col gap-2 p-3">
+              <For each={todos()}>{(todo) => <TodoItem todo={todo} />}</For>
+            </ul>
+          ) : (
+            <p class="opacity-70 p-3">Use the form above to add a new TODO.</p>
+          )}
+        </div>
       </div>
-    </div>
+    </TodosProvider>
   )
 }
 
