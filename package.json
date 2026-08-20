@@ -6,20 +6,23 @@
   "type": "module",
   "scripts": {
     "start": "node --env-file-if-exists=.env .output/server/index.mjs",
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview --host",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@libsql/client": "^0.17.4",
     "@solidjs/meta": "^1.0.0-next.2",
     "@solidjs/router": "^2.0.0-next.16",
     "@solidjs/web": "^2.0.0-rc.0",
     "dotenv": "^17.4.2",
+    "drizzle-orm": "1.0.0-rc.4",
     "ipx": "4.0.0-beta.1",
     "nitro": "3.0.260610-beta",
     "nprogress": "^0.2.0",
     "solid-js": "^2.0.0-rc.0",
-    "unstorage": "^1.17.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -29,6 +32,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.2.0",
     "@types/nprogress": "^0.2.3",
+    "drizzle-kit": "1.0.0-rc.4",
     "filesystem-routing": "0.2.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.2",

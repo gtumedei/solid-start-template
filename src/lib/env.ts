@@ -4,6 +4,7 @@ import { z } from "zod"
 if (isServer) await import("dotenv/config")
 
 export const PrivateEnvSchema = z.object({
+  DB_FILE_NAME: z.string(),
   TEST_VARIABLE: z.string(),
 })
 

@@ -1,23 +1,19 @@
 import { action, query, revalidate, RouteDefinition, useAction } from "@solidjs/router"
+import { eq } from "drizzle-orm"
 import { Component, createMemo, For } from "solid-js"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
 import { db } from "~/lib/db"
+import { Todo, Todos } from "~/lib/db/schema"
 import { createForm } from "~/lib/form"
 import { validated } from "~/lib/validation"
 import TablerPlus from "~icons/tabler/plus"
 import TablerX from "~icons/tabler/x"
 
-type Todo = {
-  id: number
-  content: string
-  completed: boolean
-}
-
 const getTodos = query(async () => {
   "use server"
   console.log("getTodos")
-  const todos = ((await db.getItem("todos")) ?? []) as Todo[]
+  const todos = await db.select().from(Todos)
   return todos
 }, "todos")
 
@@ -29,9 +25,7 @@ const createTodoAction = action(async (rawPayload: z.infer<typeof CreateTodoSche
   "use server"
   const payload = validated(rawPayload, CreateTodoSchema)
   console.log("createTodo", payload)
-  const todos = ((await db.getItem("todos")) ?? []) as Todo[]
-  todos.push({ id: todos.length, content: payload.content, completed: false })
-  await db.setItem("todos", todos)
+  await db.insert(Todos).values(payload)
   return revalidate(getTodos.key)
 })
 
@@ -41,11 +35,9 @@ const toggleCompletedAction = action(async (rawPayload: z.infer<typeof TodoIdSch
   "use server"
   const payload = validated(rawPayload, TodoIdSchema)
   console.log("toggleCompleted", payload)
-  const todos = ((await db.getItem("todos")) ?? []) as Todo[]
-  const todo = todos.find((t) => t.id == payload.id)
+  const [todo] = await db.select().from(Todos).where(eq(Todos.id, payload.id))
   if (!todo) throw new Error("TODO not found")
-  todo.completed = !todo.completed
-  await db.setItem("todos", todos)
+  await db.update(Todos).set({ completed: !todo.completed }).where(eq(Todos.id, payload.id))
   return revalidate(getTodos.key)
 })
 
@@ -53,9 +45,7 @@ const deleteTodoAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>)
   "use server"
   const payload = validated(rawPayload, TodoIdSchema)
   console.log("deleteTodo", payload)
-  let todos = ((await db.getItem("todos")) ?? []) as Todo[]
-  todos = todos.filter((t) => t.id != payload.id)
-  await db.setItem("todos", todos)
+  await db.delete(Todos).where(eq(Todos.id, payload.id))
   return revalidate(getTodos.key)
 })
 

@@ -11,8 +11,5 @@
 
 ## TODO
 
-- [ ] Add Drizzle and SQLite instead of unstorage
 - [ ] Fix unplugin-icons types
 - [ ] Add optimistic updates in todos
-- [ ] Test prod build
-  - [ ] Consider replacing `server.js` with [Nitro](https://v2.solidjs.com/building-apps/deployment#nitro)
