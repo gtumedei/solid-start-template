@@ -5,11 +5,12 @@
 - Use icons from any set with unplugin-icons
 - Typesafe environment variables with Zod
 - Progress bar for page loading with nprogress
-- Custom Zod-based form handling utility
 - Optimize images with IPX
-- Fetch and mutate data safely with helpers on top of Zod and Solid Router
+- Fetch and mutate data safely and optimistically with helpers on top of Zod
+- Semi-automatic sitemap generation
+- Provide-inject context pattern helper
+- Zod-based form handling helper
 
 ## TODO
 
 - [ ] Fix unplugin-icons types
-- [ ] Add optimistic updates in todos

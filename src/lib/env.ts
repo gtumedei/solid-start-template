@@ -5,11 +5,10 @@ if (isServer) await import("dotenv/config")
 
 export const PrivateEnvSchema = z.object({
   DB_FILE_NAME: z.string(),
-  TEST_VARIABLE: z.string(),
 })
 
 export const PublicEnvSchema = z.object({
-  PUBLIC_TEST_VARIABLE: z.string(),
+  PUBLIC_BASE_URL: z.url(),
 })
 
 const parsedPrivateEnv = PrivateEnvSchema.safeParse(isServer ? process.env : {})

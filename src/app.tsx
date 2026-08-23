@@ -8,8 +8,6 @@ import { Router } from "~/router"
 
 import "~/global.css"
 
-// The app root: the router and the site-wide layout live here. Pages are
-// the modules under src/routes.
 export default function App() {
   // Should print all env variables on the server, but only the public ones on the client
   console.log(env)
