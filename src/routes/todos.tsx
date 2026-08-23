@@ -1,6 +1,12 @@
-import { action, query, revalidate, RouteDefinition, useAction } from "@solidjs/router"
+import {
+  query,
+  revalidate,
+  RouteDefinition,
+  action as routerAction,
+  useAction,
+} from "@solidjs/router"
 import { eq } from "drizzle-orm"
-import { Component, createMemo, For } from "solid-js"
+import { action, Component, createOptimisticStore, flush, For } from "solid-js"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
 import { create } from "~/lib/context"
@@ -26,7 +32,7 @@ const CreateTodoSchema = z.object({
   content: z.string().min(1),
 })
 
-const createTodoAction = action(async (rawPayload: z.infer<typeof CreateTodoSchema>) => {
+const createTodoAction = routerAction(async (rawPayload: z.infer<typeof CreateTodoSchema>) => {
   "use server"
   const payload = validated(rawPayload, CreateTodoSchema)
   console.log("createTodo", payload)
@@ -37,7 +43,7 @@ const createTodoAction = action(async (rawPayload: z.infer<typeof CreateTodoSche
 
 const TodoIdSchema = z.object({ id: z.number() })
 
-const toggleCompletedAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
+const toggleCompletedAction = routerAction(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
   "use server"
   const payload = validated(rawPayload, TodoIdSchema)
   console.log("toggleCompleted", payload)
@@ -48,7 +54,7 @@ const toggleCompletedAction = action(async (rawPayload: z.infer<typeof TodoIdSch
   return revalidate(getTodos.key)
 })
 
-const deleteTodoAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
+const deleteTodoAction = routerAction(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
   "use server"
   const payload = validated(rawPayload, TodoIdSchema)
   console.log("deleteTodo", payload)
@@ -57,14 +63,45 @@ const deleteTodoAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>)
   return revalidate(getTodos.key)
 })
 
+type OptimisticTodo = Todo & {
+  creating?: true
+  updating?: true
+  deleting?: true
+}
+
 const createTodosCtx = () => {
-  const todos = createMemo(() => getTodos())
+  const [todos, setTodos] = createOptimisticStore<OptimisticTodo[]>(() => getTodos(), [])
 
   const createTodo = useAction(createTodoAction)
-  const toggleCompleted = useAction(toggleCompletedAction)
-  const deleteTodo = useAction(deleteTodoAction)
+  const createTodoOptimistic: typeof createTodo = action(function* (params) {
+    setTodos((v) => {
+      v.push({ id: Math.random(), content: params.content, completed: false, creating: true })
+    })
+    yield createTodo(params)
+  })
 
-  return { todos, createTodo, toggleCompleted, deleteTodo }
+  const toggleCompleted = useAction(toggleCompletedAction)
+  const toggleCompletedOptimistic: typeof toggleCompleted = action(function* (params) {
+    setTodos((v) =>
+      v.map((todo) =>
+        todo.id == params.id ? { ...todo, completed: !todo.completed, updating: true } : todo,
+      ),
+    )
+    yield toggleCompleted(params)
+  })
+
+  const deleteTodo = useAction(deleteTodoAction)
+  const deleteTodoOptimistic: typeof deleteTodo = action(function* (params) {
+    setTodos((v) => v.map((todo) => (todo.id == params.id ? { ...todo, deleting: true } : todo)))
+    yield deleteTodo(params)
+  })
+
+  return {
+    todos,
+    createTodo: createTodoOptimistic,
+    toggleCompleted: toggleCompletedOptimistic,
+    deleteTodo: deleteTodoOptimistic,
+  }
 }
 const [TodosProvider, useTodos] = create(createTodosCtx)
 
@@ -78,10 +115,12 @@ const AddTodoForm = () => {
     initialValues: { content: "" },
     onSubmit: async (values) => {
       try {
-        await createTodo(values)
         reset()
+        flush()
+        await createTodo(values)
         contentInput.focus()
       } catch (e) {
+        setFields(() => values)
         console.error(e)
         alert("error")
       }
@@ -112,11 +151,11 @@ const AddTodoForm = () => {
   )
 }
 
-const TodoItem: Component<{ todo: Todo }> = (props) => {
+const TodoItem: Component<{ todo: OptimisticTodo }> = (props) => {
   const { toggleCompleted, deleteTodo } = useTodos()
 
   return (
-    <li class="flex gap-3">
+    <li class={["flex gap-3", (props.todo.creating || props.todo.deleting) && "opacity-50"]}>
       <input
         type="checkbox"
         checked={props.todo.completed}
@@ -125,11 +164,9 @@ const TodoItem: Component<{ todo: Todo }> = (props) => {
           await toggleCompleted({ id: props.todo.id })
         }}
       />
-      <span class={["grow", props.todo.completed && "line-through opacity-50"]}>
-        {props.todo.content}
-      </span>
+      <span class={["grow", props.todo.completed && "line-through"]}>{props.todo.content}</span>
       <button
-        class="h-6 w-6 inline-flex rounded-full hover:bg-black/10 transition-colors"
+        class="h-6 w-6 inline-flex rounded-full hover:bg-black/10 disabled:opacity-50 transition-colors"
         onClick={async () => {
           await deleteTodo({ id: props.todo.id })
         }}
@@ -155,9 +192,9 @@ const TodosPage = () => {
         <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase mb-16">TODOs</h1>
         <div class="w-full max-w-md flex flex-col text-left rounded overflow-hidden border border-black/10 divide-y divide-black/10">
           <AddTodoForm />
-          {(todos()?.length ?? 0 > 0) ? (
+          {(todos.length ?? 0 > 0) ? (
             <ul class="flex flex-col gap-2 p-3">
-              <For each={todos()}>{(todo) => <TodoItem todo={todo} />}</For>
+              <For each={todos}>{(todo) => <TodoItem todo={todo} />}</For>
             </ul>
           ) : (
             <p class="opacity-70 p-3">Use the form above to add a new TODO.</p>
