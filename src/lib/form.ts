@@ -33,10 +33,7 @@ export const createForm = <TSchemaOutput extends Record<string, unknown>, TSchem
         draft[key as keyof TSchemaOutput] = submitted() || fields[key] !== initialValues[key]
       }
     },
-    Object.keys(initialValues).reduce(
-      (acc, key) => ({ ...acc, [key]: false }),
-      {} as Record<keyof TSchemaOutput, boolean>,
-    ),
+    Object.keys(initialValues).reduce((acc, key) => ({ ...acc, [key]: false }), {} as any),
   )
 
   const errors = createProjection<Partial<Record<keyof TSchemaOutput, string>>>((draft) => {
@@ -50,7 +47,7 @@ export const createForm = <TSchemaOutput extends Record<string, unknown>, TSchem
         if (touched[key] && !draft[key]) draft[key] = issue.message
       }
     }
-  }, {})
+  }, {} as any)
 
   // The form is valid if the schema parses successfully
   const isValid = createMemo(() => schema.safeParse(fields).success)

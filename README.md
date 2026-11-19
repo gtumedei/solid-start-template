@@ -14,3 +14,4 @@
 ## TODO
 
 - [ ] Fix unplugin-icons types
+- [ ] Replace the custom image code with [solid-image](https://github.com/solidjs/solid-image), plus add a new image to showcase it under /about

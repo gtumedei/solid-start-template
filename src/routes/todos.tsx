@@ -193,7 +193,7 @@ const TodosPage = () => {
         <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase mb-16">TODOs</h1>
         <div class="w-full max-w-md flex flex-col text-left rounded overflow-hidden border border-black/10 divide-y divide-black/10">
           <AddTodoForm />
-          {(todos.length ?? 0 > 0) ? (
+          {(todos.length ?? 0) > 0 ? (
             <ul class="flex flex-col gap-2 p-3">
               <For each={todos}>{(todo) => <TodoItem todo={todo} />}</For>
             </ul>
