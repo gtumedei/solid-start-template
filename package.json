@@ -15,29 +15,29 @@
   "dependencies": {
     "@libsql/client": "^0.17.4",
     "@solidjs/meta": "^1.0.0-next.2",
-    "@solidjs/router": "^2.0.0-next.16",
-    "@solidjs/web": "^2.0.0-rc.0",
+    "@solidjs/router": "2.0.0-next.40",
+    "@solidjs/web": "2.0.0-rc.15",
     "dotenv": "^17.4.2",
     "drizzle-orm": "1.0.0-rc.4",
     "ipx": "4.0.0-beta.1",
-    "nitro": "3.0.260610-beta",
+    "nitro": "3.0.260903-beta",
     "nprogress": "^0.2.0",
     "sitemap": "^9.0.1",
-    "solid-js": "^2.0.0-rc.0",
+    "solid-js": "2.0.0-rc.15",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.2.38",
-    "@solidjs/vite-plugin": "^3.0.0-next.28",
+    "@solidjs/vite-plugin": "3.0.0-next.50",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.2.0",
     "@types/nprogress": "^0.2.3",
     "drizzle-kit": "1.0.0-rc.4",
-    "filesystem-routing": "0.2.1",
+    "filesystem-routing": "0.4.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.2",
     "unplugin-icons": "^23.0.1",
-    "vite": "^8.1.5"
+    "vite": "^8.3.4"
   }
 }

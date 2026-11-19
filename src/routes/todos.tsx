@@ -1,12 +1,7 @@
-import {
-  query,
-  revalidate,
-  RouteDefinition,
-  action as routerAction,
-  useAction,
-} from "@solidjs/router"
+import { action, query, RouteDefinition, useAction } from "@solidjs/router"
+import { reload } from "@solidjs/web"
 import { eq } from "drizzle-orm"
-import { action, Component, createOptimisticStore, flush, For } from "solid-js"
+import { Component, createOptimisticStore, For } from "solid-js"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
 import { create } from "~/lib/context"
@@ -20,7 +15,7 @@ import TablerX from "~icons/tabler/x"
 // Add an artificial delay to server operations to showcase pending state and optimistic updates
 const delay = (ms = 500) => new Promise((r) => setTimeout(r, ms))
 
-const getTodos = query(async () => {
+const getTodosQuery = query(async () => {
   "use server"
   console.log("getTodos")
   await delay()
@@ -32,18 +27,18 @@ const CreateTodoSchema = z.object({
   content: z.string().min(1),
 })
 
-const createTodoAction = routerAction(async (rawPayload: z.infer<typeof CreateTodoSchema>) => {
+const createTodoAction = action(async (rawPayload: z.infer<typeof CreateTodoSchema>) => {
   "use server"
   const payload = validated(rawPayload, CreateTodoSchema)
   console.log("createTodo", payload)
   await delay()
   await db.insert(Todos).values(payload)
-  return revalidate(getTodos.key)
+  return reload({ revalidate: getTodosQuery.key })
 })
 
 const TodoIdSchema = z.object({ id: z.number() })
 
-const toggleCompletedAction = routerAction(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
+const toggleCompletedAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
   "use server"
   const payload = validated(rawPayload, TodoIdSchema)
   console.log("toggleCompleted", payload)
@@ -51,16 +46,16 @@ const toggleCompletedAction = routerAction(async (rawPayload: z.infer<typeof Tod
   const [todo] = await db.select().from(Todos).where(eq(Todos.id, payload.id))
   if (!todo) throw new Error("TODO not found")
   await db.update(Todos).set({ completed: !todo.completed }).where(eq(Todos.id, payload.id))
-  return revalidate(getTodos.key)
+  return reload({ revalidate: getTodosQuery.key })
 })
 
-const deleteTodoAction = routerAction(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
+const deleteTodoAction = action(async (rawPayload: z.infer<typeof TodoIdSchema>) => {
   "use server"
   const payload = validated(rawPayload, TodoIdSchema)
   console.log("deleteTodo", payload)
   await delay()
   await db.delete(Todos).where(eq(Todos.id, payload.id))
-  return revalidate(getTodos.key)
+  return reload({ revalidate: getTodosQuery.key })
 })
 
 type OptimisticTodo = Todo & {
@@ -70,37 +65,39 @@ type OptimisticTodo = Todo & {
 }
 
 const createTodosCtx = () => {
-  const [todos, setTodos] = createOptimisticStore<OptimisticTodo[]>(() => getTodos(), [])
+  const [todos, setTodos] = createOptimisticStore<OptimisticTodo[]>(() => getTodosQuery(), [])
 
   const createTodo = useAction(createTodoAction)
-  const createTodoOptimistic: typeof createTodo = action(function* (params) {
-    setTodos((v) => {
-      v.push({ id: Math.random(), content: params.content, completed: false, creating: true })
-    })
-    yield createTodo(params)
-  })
+  createTodoAction.onSubmit((payload) =>
+    setTodos((draft) => {
+      draft.push({ id: Math.random(), content: payload.content, completed: false, creating: true })
+    }),
+  )
 
   const toggleCompleted = useAction(toggleCompletedAction)
-  const toggleCompletedOptimistic: typeof toggleCompleted = action(function* (params) {
-    setTodos((v) =>
-      v.map((todo) =>
-        todo.id == params.id ? { ...todo, completed: !todo.completed, updating: true } : todo,
-      ),
-    )
-    yield toggleCompleted(params)
-  })
+  toggleCompletedAction.onSubmit((payload) =>
+    setTodos((draft) => {
+      const t = draft.find((t) => t.id == payload.id)
+      if (t) {
+        t.updating = true
+        t.completed = !t.completed
+      }
+    }),
+  )
 
   const deleteTodo = useAction(deleteTodoAction)
-  const deleteTodoOptimistic: typeof deleteTodo = action(function* (params) {
-    setTodos((v) => v.map((todo) => (todo.id == params.id ? { ...todo, deleting: true } : todo)))
-    yield deleteTodo(params)
-  })
+  deleteTodoAction.onSubmit((payload) =>
+    setTodos((draft) => {
+      const t = draft.find((t) => t.id == payload.id)
+      if (t) t.deleting = true
+    }),
+  )
 
   return {
     todos,
-    createTodo: createTodoOptimistic,
-    toggleCompleted: toggleCompletedOptimistic,
-    deleteTodo: deleteTodoOptimistic,
+    createTodo,
+    toggleCompleted,
+    deleteTodo,
   }
 }
 const [TodosProvider, useTodos] = create(createTodosCtx)
@@ -110,19 +107,17 @@ const AddTodoForm = () => {
 
   const { createTodo } = useTodos()
 
-  const { fields, setFields, isValid, handleSubmit, reset } = createForm({
+  const { fields, setFields, isValid, isSubmitting, handleSubmit } = createForm({
     schema: CreateTodoSchema,
     initialValues: { content: "" },
     onSubmit: async (values) => {
       try {
-        reset()
-        flush()
         await createTodo(values)
         contentInput.focus()
       } catch (e) {
-        setFields(() => values)
         console.error(e)
         alert("error")
+        throw e // Tells the action in createForm to not commit the reset
       }
     },
   })
@@ -137,13 +132,14 @@ const AddTodoForm = () => {
             fields.content = e.target.value
           })
         }
-        class="grow p-3 outline-none!"
+        disabled={isSubmitting()}
+        class="grow p-3 disabled:opacity-50 outline-none!"
         placeholder="Type your TODO here"
       />
       <button
         type="submit"
         class="text-sm font-medium text-white bg-sky-600 hover:bg-sky-500 disabled:bg-gray-200 disabled:text-gray-400 transition-colors h-9 inline-flex items-center gap-2 px-4 rounded mr-1.5"
-        disabled={!isValid()}
+        disabled={!isValid() || isSubmitting()}
       >
         Add <TablerPlus />
       </button>
@@ -155,7 +151,12 @@ const TodoItem: Component<{ todo: OptimisticTodo }> = (props) => {
   const { toggleCompleted, deleteTodo } = useTodos()
 
   return (
-    <li class={["flex gap-3", (props.todo.creating || props.todo.deleting) && "opacity-50"]}>
+    <li
+      class={[
+        "flex gap-3",
+        (props.todo.creating || props.todo.updating || props.todo.deleting) && "opacity-50",
+      ]}
+    >
       <input
         type="checkbox"
         checked={props.todo.completed}
@@ -178,7 +179,7 @@ const TodoItem: Component<{ todo: OptimisticTodo }> = (props) => {
 }
 
 export const route = {
-  preload: () => getTodos(),
+  preload: () => getTodosQuery(),
 } satisfies RouteDefinition
 
 const TodosPage = () => {

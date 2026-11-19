@@ -8,11 +8,12 @@ import { nitro } from "nitro/vite"
 export default defineConfig({
   plugins: [
     solid({
+      // start: true,
       // TODO: this should not be required (`start: true` is enough), but right now live updates seem to break if the file names start with a lowercase letter
       start: {
-        document: "./src/document.tsx",
-        app: "./src/app.tsx",
-        middleware: "./src/middleware.ts",
+        document: "src/document.tsx",
+        app: "src/app.tsx",
+        // middleware: "src/middleware.ts",
       },
       ssr: true,
       serverFunctions: true,

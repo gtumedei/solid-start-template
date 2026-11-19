@@ -19,6 +19,8 @@ declare module "virtual:file-routes" {
   export interface FileRouteEntry {
     path: string;
     page?: boolean;
+    /** The page component is a server function; its `$component` is delivered eagerly. */
+    server?: boolean;
     $component?: FileRouteLazyRef<any> | FileRouteEagerRef<any>;
     $$route?: FileRouteEagerRef<any>;
     [key: string]: unknown;
@@ -51,12 +53,6 @@ declare module "virtual:file-routes" {
       $$route?: undefined;
     },
     {
-      path: "/todos";
-      page: true;
-      $component: FileRouteLazyRef<typeof import("./src/routes/todos")>;
-      $$route: FileRouteEagerRef<typeof import("./src/routes/todos")>;
-    },
-    {
       path: "/ipx/*ipx";
       page: false;
       $GET: FileRouteLazyRef<typeof import("./src/routes/ipx/[...ipx]")>;
@@ -69,6 +65,12 @@ declare module "virtual:file-routes" {
       $GET: FileRouteLazyRef<typeof import("./src/routes/sitemap.xml")>;
       $HEAD: FileRouteLazyRef<typeof import("./src/routes/sitemap.xml")>;
       $$route?: undefined;
+    },
+    {
+      path: "/todos";
+      page: true;
+      $component: FileRouteLazyRef<typeof import("./src/routes/todos")>;
+      $$route: FileRouteEagerRef<typeof import("./src/routes/todos")>;
     }
   ];
   export default routes;
